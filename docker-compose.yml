@@ -1,0 +1,55 @@
+
+# Описываем сервисы нашего приложения
+services:
+  # Сервис Django-приложения
+  web:
+    # Собираем образ из текущей директории (где находится Dockerfile)
+    build: .
+    # Команда для запуска Gunicorn-сервера
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000
+    # Монтируем текущую директорию и том для статических файлов
+    volumes:
+      - .:/app
+      - static_volume:/app/static
+    # Открываем порт 8000 внутри Docker-сети
+    expose:
+      - "8000"
+    # Указываем, что сервис зависит от базы данных
+    depends_on:
+      - db
+    # Подключаем файл с переменными окружения
+    env_file:
+      - ./.env
+
+  # Сервис Nginx
+  nginx:
+    # Собираем образ из директории nginx
+    build:
+      context: ./nginx
+    # Пробрасываем порт 80 на хост-машину
+    ports:
+      - "80:80"
+    # Монтируем конфигурационный файл Nginx и том со статическими файлами
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - static_volume:/app/static
+    # Указываем, что Nginx зависит от сервиса web
+    depends_on:
+      - web
+
+  # Сервис базы данных PostgreSQL
+  db:
+    # Используем официальный образ PostgreSQL версии 16
+    image: postgres:16
+    # Монтируем том для хранения данных базы данных
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    # Подключаем файл с переменными окружения
+    env_file:
+      - ./.env
+
+# Объявляем тома для сохранения данных между перезапусками
+volumes:
+  postgres_data:
+  static_volume:
+

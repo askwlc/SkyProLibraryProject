@@ -5,8 +5,8 @@ services:
   web:
     # Собираем образ из текущей директории (где находится Dockerfile)
     build: .
-    # Команда для запуска Gunicorn-сервера
-    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000
+    # Выполняем миграции, собираем статические файлы и запускаем Gunicorn-сервер
+    command: sh -c "python manage.py collectstatic --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000"
     # Монтируем текущую директорию и том для статических файлов
     volumes:
       - .:/app

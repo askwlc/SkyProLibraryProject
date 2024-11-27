@@ -1,6 +1,8 @@
-
 # Используем официальный образ Nginx
 FROM nginx:latest
+
+# Создаем директорию для статических файлов
+RUN mkdir -p /app/staticfiles
 
 # Копируем файл конфигурации Nginx в контейнер
 COPY nginx.conf /etc/nginx/nginx.conf

@@ -23,6 +23,3 @@ COPY . .
 # Открываем порт 8000 для доступа к приложению
 EXPOSE 8000
 
-# Выполняем миграции, собираем статические файлы и запускаем Gunicorn-сервер
-CMD ["sh", "-c", "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000"]
-
